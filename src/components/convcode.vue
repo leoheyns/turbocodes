@@ -177,7 +177,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  justify-items: center;
+  align-items: center;
 }
 
 </style>
