@@ -1,8 +1,8 @@
 <template>
   <div class="trellis">
-    <svg height="1000" width="500">
-      <line v-for="(edge, index) in edges" :key="index + 'edge'" :x1="edge.from.time * timestep + offset" :y1="stateToInt(edge.from.state) * heightstep + offset" :x2="edge.to.time * timestep + offset" :y2="stateToInt(edge.to.state) * heightstep + offset" style="stroke:rgb(0,0,0);stroke-width:5" />
-      <circle v-for="(node, index) in nodes" :key="index + 'node'" :cx="node.time * timestep + offset" :cy="stateToInt(node.state) * heightstep + offset" r="10" stroke="black" stroke-width="4" fill="white" />
+    <svg height="1000" width="100%">
+      <line v-for="(edge, index) in trellis.edges" :key="index + 'edge'" :x1="edge.from.time * timestep + offset" :y1="stateToInt(edge.from.state) * heightstep + offset" :x2="edge.to.time * timestep + offset" :y2="stateToInt(edge.to.state) * heightstep + offset" style="stroke:rgb(0,0,0);stroke-width:5" />
+      <circle v-for="(node, index) in trellis.nodes" :key="index + 'node'" :cx="node.time * timestep + offset" :cy="stateToInt(node.state) * heightstep + offset" r="10" stroke="black" stroke-width="4" fill="white" />
     </svg> 
   </div>
 </template>
@@ -18,8 +18,7 @@ export default {
       }
     },
     props: {
-      nodes: Array,
-      edges: Array,
+      trellis: Object,
     },
     computed: {
     },
