@@ -1,49 +1,32 @@
 <template>
   <div class="trellis">
-    <div class="cont">
-    <template v-for="node in nodes"  >
-        <div :key="node" :style="node.style">
-            </div>
-        </template>
-    </div>
+    <svg height="1000" width="500">
+      <line v-for="(edge, index) in edges" :key="index + 'edge'" :x1="edge.from.time * timestep + offset" :y1="stateToInt(edge.from.state) * heightstep + offset" :x2="edge.to.time * timestep + offset" :y2="stateToInt(edge.to.state) * heightstep + offset" style="stroke:rgb(0,0,0);stroke-width:5" />
+      <circle v-for="(node, index) in nodes" :key="index + 'node'" :cx="node.time * timestep + offset" :cy="stateToInt(node.state) * heightstep + offset" r="10" stroke="black" stroke-width="4" fill="white" />
+    </svg> 
   </div>
 </template>
 
 <script>
 
 export default {
-    // props: {
-    //   nodes: {
-    //     type: Array,
-    //     required: true,
-    //   }
-    // },
     data() {
-        return {
-        message: 'Hello Vue!!',
-        states_by_time: {
-            0: [0],
-            1: [0,1],
-            2: [0,1,2,3]
-                        },
-        }
+      return {
+        offset: 50,
+        timestep: 100,
+        heightstep: 50,
+      }
+    },
+    props: {
+      nodes: Array,
+      edges: Array,
     },
     computed: {
-        nodes() {
-        let nodes = []
-        Object.keys(this.states_by_time).forEach((time) => {
-            this.states_by_time[time].forEach((state) => {
-            let node = {}
-            let bottom = state * 50
-            let left = time * 50
-            let height = 20
-            let width = 20
-            node.style = `height: ${height}px; width: ${width}px; position: absolute; bottom: ${bottom}px; left: ${left}px; background-color: black; margin: 10px; `
-            nodes.push(node)
-            })
-        })
-        return nodes
-        }
+    },
+    methods: {
+      stateToInt(state){
+        return parseInt(state, 2)
+      }
     }
 }
 </script>

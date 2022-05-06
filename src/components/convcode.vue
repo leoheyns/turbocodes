@@ -9,7 +9,7 @@
     {{sourcetext}}
     <p> output</p>
     <p>{{boolArrToStr(output[0])}}      {{boolArrToStr(output[1])}}</p>
-    <trellis/>
+    <trellis :nodes="nodes" :edges="edges" />
     <viterbi/>
   </div>
 </template>
@@ -26,10 +26,18 @@ import {Edge, Node} from "@/decoding/viterbi";
 // todo @ leo: example usage of the above classes. For simplicity in the example, the state represents past inputs
 let node0 = new Node(0, '0000')
 let node1 = new Node(1, '0001')
-let nodes = [node0, node1]
-let edge00 = new Edge('0', '00', node0, node0)
-let edge01 = new Edge('1', '11', node0, node1)
-let edges = [edge00, edge01]
+let node2 = new Node(1, '0000')
+let node3 = new Node(2, '0000')
+
+let nodes = [node0, node1, node2, node3]
+
+
+let edge01 = new Edge('0', '00', node0, node1)
+let edge02 = new Edge('1', '11', node0, node2)
+let edge13 = new Edge('1', '11', node1, node3)
+let edge23 = new Edge('0', '11', node2, node3)
+
+let edges = [edge01, edge02, edge13, edge23]
 console.log(nodes)
 console.log(edges)
 
@@ -47,9 +55,6 @@ export default {
     taptext1: "",
   }},
   computed: {
-    // boolsource: function () {
-    //   return this.sourcetext.split('').map(b => b==1)
-    // }
     memlenght: function() {
       return this.taps[0].length
     },
@@ -70,6 +75,12 @@ export default {
     },
     input: function() {
         return this.stringToBoolArr(this.sourcetext)
+    },
+    nodes: function() {
+      return nodes
+    },
+    edges: function() {
+      return edges
     }
 
   },
@@ -179,7 +190,7 @@ export default {
           trellis.push(tdict_layer)
         }
         console.log(trellis)
-      }
+      },
   },
   components: {
     trellis,
