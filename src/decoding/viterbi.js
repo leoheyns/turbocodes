@@ -1,5 +1,5 @@
 export {
-    Edge, Node, Trellis, viterbi, min_sum, sum_product, turboturbo,
+    Edge, Node, Trellis, Interleaver, viterbi, min_sum, sum_product, turboturbo,
 }
 
 class Edge {
@@ -64,6 +64,34 @@ class Trellis {
         this.edge_times = Object.keys(edge_times_set)
     }
 
+}
+
+class Interleaver {
+    constructor(mapping) {
+        this.mapping = mapping // defines a dict k1 -> k2 meaning that any dictionary k1 -> v will be interleaved into k2 -> v
+        let reverse_mapping = {}
+        Object.keys(mapping).forEach((k) => {
+            let v = mapping[k]
+            reverse_mapping[v] = k // assumes mapping is a bijection (so keys map to distinct values)
+        })
+        this.reverse_mapping = reverse_mapping
+    }
+
+    interleave_with_map(dict_to_interleave, mapping) {
+        let interleaved = {}
+        Object.keys(dict_to_interleave).forEach((k) => {
+            interleaved[mapping[k]] = dict_to_interleave[k]
+        })
+        return interleaved
+    }
+
+    interleave(dict_to_interleave) {
+        return this.interleave_with_map(dict_to_interleave, this.mapping)
+    }
+
+    deinterleave(dict_to_deinterleave) {
+        return this.interleave_with_map(dict_to_deinterleave, this.reverse_mapping)
+    }
 }
 
 
