@@ -4,12 +4,12 @@
     <b-form-input v-model="sourcetext" placeholder="enter source bits"></b-form-input>
     <b-form-input v-model="taptext0" placeholder="enter tap bits"></b-form-input>
     <b-form-input v-if="type=='nonsysnonrec' || type=='sysrec'" v-model="taptext1" placeholder="enter tap bits"></b-form-input>
-    <b-button @click="getTrellis()">doe spul</b-button>
+    <b-button @click="newGetTrellis()">doe spul</b-button>
     <p> input</p>
     {{sourcetext}}
     <p> output</p>
     <p>{{boolArrToStr(output[0])}}      {{boolArrToStr(output[1])}}</p>
-    <trellis :nodes="nodes" :edges="edges" />
+    <trellis :trellis="trellis" />
     <viterbi/>
   </div>
 </template>
@@ -20,7 +20,7 @@ import viterbi from "@/components/viterbi";
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 import trellis from '@/components/trellis'
 
-import {Edge, Node} from "@/decoding/viterbi";
+import {Edge, Node, Trellis} from "@/decoding/viterbi";
 
 
 // todo @ leo: example usage of the above classes. For simplicity in the example, the state represents past inputs
@@ -38,8 +38,7 @@ let edge13 = new Edge('1', '11', node1, node3)
 let edge23 = new Edge('0', '11', node2, node3)
 
 let edges = [edge01, edge02, edge13, edge23]
-console.log(nodes)
-console.log(edges)
+
 
 export default {
   name: 'convcode',
@@ -81,6 +80,9 @@ export default {
     },
     edges: function() {
       return edges
+    },
+    trellis: function() {
+      return this.newGetTrellis()
     }
 
   },
@@ -128,7 +130,7 @@ export default {
       },
 
       stringToBoolArr(s){
-        return s.split('').map(b => b==1)
+        return s.split('').map(b => parseInt(b))
       },
 
       boolArrToStr(barr){
@@ -190,6 +192,37 @@ export default {
           trellis.push(tdict_layer)
         }
         console.log(trellis)
+      },
+      newGetTrellis(){
+        let times = []
+        let tdict = this.getTrellisDict()
+        times[0] = [new Node(0, Array(this.memlenght + 1).join("0"))]
+        edges = []
+        for (let i = 0; i < this.output[0].length; i++){
+          let nextNodes = {}
+          times[i].forEach(node => {
+            let tdict_node = tdict[this.stringToBoolArr(node.state)]
+            let forward_edges = []
+            if(i >= this.output[0].length - this.memlenght){
+              if(tdict[this.stringToBoolArr(node.state)].one.nextmem.slice(-1)){
+                forward_edges = [tdict_node.zero]
+              } else {
+                forward_edges = [tdict_node.one]
+              }
+            } else {
+              forward_edges = [tdict_node.one, tdict_node.zero]
+            }
+            
+            forward_edges.forEach(edge => {
+              if(!(edge.nextmem in nextNodes)){
+                nextNodes[edge.nextmem] = new Node(i + 1, this.boolArrToStr(edge.nextmem))
+              }
+              edges.push(new Edge(edge.u, edge.x, node, nextNodes[edge.nextmem]))
+            });
+          });
+          times.push(Object.values(nextNodes))
+        }
+        return new Trellis([].concat.apply([], times), edges)
       },
   },
   components: {
