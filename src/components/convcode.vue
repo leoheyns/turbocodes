@@ -17,6 +17,44 @@
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 import trellis from '@/components/trellis'
 
+class Edge {
+  constructor(u, x, from, to) {
+    this.u = u // input
+    this.x = x // outputs
+    this.from = from
+    this.to = to
+    this.from.addOutgoing(this)
+    this.to.addIncoming(this)
+  }
+}
+
+class Node {
+  constructor(time, state) {
+    this.time = time
+    this.state = state
+    this.incoming = {}
+    this.outgoing = {}
+  }
+
+  addIncoming(edge) {
+    this.incoming[edge.u] = edge
+  }
+
+  addOutgoing(edge) {
+    this.outgoing[edge.u] = edge
+  }
+}
+
+// todo @ leo: example usage of the above classes. For simplicity in the example, the state represents past inputs
+let node0 = new Node(0, '0000')
+let node1 = new Node(1, '0001')
+let nodes = [node0, node1]
+let edge00 = new Edge('0', '00', node0, node0)
+let edge01 = new Edge('1', '11', node0, node1)
+let edges = [edge00, edge01]
+console.log(nodes)
+console.log(edges)
+
 export default {
   name: 'convcode',
   data() {return {
