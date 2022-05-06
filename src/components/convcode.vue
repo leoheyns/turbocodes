@@ -10,10 +10,13 @@
     <p> output</p>
     <p>{{boolArrToStr(output[0])}}      {{boolArrToStr(output[1])}}</p>
     <trellis/>
+    <viterbi/>
   </div>
 </template>
 
 <script>
+import viterbi from "@/components/viterbi";
+
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 import trellis from '@/components/trellis'
 
@@ -179,7 +182,8 @@ export default {
       }
   },
   components: {
-    trellis
+    trellis,
+    viterbi,
   }
   }
 </script>

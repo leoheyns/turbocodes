@@ -14,23 +14,42 @@ class Edge {
     get time() {
         return this.from.time + '' + this.to.time // I hope js doesn't do wacky shit here
     }
+
+    toString() {
+        let o = {
+            from: this.from.toString(),
+            to: this.to.toString(),
+            u: this.u,
+            x: this.x
+        }
+        return JSON.stringify(o)
+    }
+
 }
 
 class Node {
     constructor(time, state) {
         this.time = time
         this.state = state
-        this.incoming = {}
-        this.outgoing = {}
+        this.incoming = []
+        this.outgoing = []
     }
 
     addIncoming(edge) {
-        this.incoming[edge.u] = edge
+        this.incoming.push(edge)
     }
 
     addOutgoing(edge) {
-        this.outgoing[edge.u] = edge
+        this.outgoing.push(edge)
     }
+    toString() {
+        let o = {
+            time: this.time,
+            state: this.state,
+        }
+        return JSON.stringify(o)
+    }
+
 }
 
 function log_gamma(edge, llr_prior, y, f) {
@@ -57,22 +76,26 @@ function min_sum(nodes, edges, edge_costs) {
     //  first node cost is 0
     //  path cost is calculated by summing costs of edges along the path
     //  total path cost is to be minimized
-    let best_path = []
     let node_costs = {}
+    let best_paths = {}
     nodes.forEach((node) => {
         if (node === nodes[0]) {
             node_costs[node] = 0
+            best_paths[node] = []
+        } else {
+            let best_edge = node.incoming[0]
+            node.incoming.forEach((edge) => {
+
+                if (edge_costs[edge] + node_costs[edge.from]  < edge_costs[best_edge] + node_costs[best_edge.from]) {
+                    best_edge = edge
+                }
+            })
+            node_costs[node] = edge_costs[best_edge] + node_costs[best_edge.from]
+            best_paths[node] = [...best_paths[best_edge.from], best_edge]
         }
-        let best_edge = node.incoming[0]
-        node.incoming.forEach((edge) => {
-            if (edge_costs[edge] < edge_costs[best_edge]) {
-                best_edge = edge
-            }
-        })
-        node_costs[node] = edge_costs[best_edge] + node_costs[best_edge.from]
-        best_path.push(best_edge)
     })
-    return {min_cost: node_costs[nodes[nodes.length -1]], best_path: best_path}
+    let final_node = nodes[nodes.length - 1]
+    return {min_cost: node_costs[final_node], best_path: best_paths[final_node]}
 }
 
 function viterbi(nodes, edges, received_signal, llr_priors, f) {
