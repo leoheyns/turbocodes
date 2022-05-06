@@ -1,5 +1,5 @@
 <template>
-  <div id="convcode">
+  <div class="convcode">
     <b-form-select v-model="type" :options="types"></b-form-select>
     <b-form-input v-model="sourcetext" placeholder="enter source bits"></b-form-input>
     <b-form-input v-model="taptext0" placeholder="enter tap bits"></b-form-input>
@@ -55,7 +55,7 @@ export default {
     input: function() {
         return this.stringToBoolArr(this.sourcetext)
     }
-    
+
   },
   methods: {
       step(mem, bit){
@@ -85,7 +85,7 @@ export default {
         return({ta: bit, mem, tb: this.applyTap(this.taps[1], mem)})
       },
       terminate(mem, ta, tb){
-        for (let i = 0; i < mem.length; i++) { 
+        for (let i = 0; i < mem.length; i++) {
           let bit = 0
           if(this.type == 'sysrec'){
             let bit = this.applyTap(this.taps[0], mem.slice(1).concat([bit]))
@@ -153,7 +153,7 @@ export default {
             }
             if( "one" in tdict_layer[element]){
               newmemset[tdict_layer[element].one.nextmem] = tdict_layer[element].one.nextmem
-            } 
+            }
             if( "zero" in tdict_layer[element]){
               newmemset[tdict_layer[element].zero.nextmem] = tdict_layer[element].zero.nextmem
             }
@@ -170,3 +170,14 @@ export default {
   }
   }
 </script>
+
+<style scoped>
+.convcode {
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-items: center;
+}
+
+</style>
