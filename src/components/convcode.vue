@@ -17,33 +17,8 @@
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 import trellis from '@/components/trellis'
 
-class Edge {
-  constructor(u, x, from, to) {
-    this.u = u // input
-    this.x = x // outputs
-    this.from = from
-    this.to = to
-    this.from.addOutgoing(this)
-    this.to.addIncoming(this)
-  }
-}
+import {Edge, Node} from "@/decoding/viterbi";
 
-class Node {
-  constructor(time, state) {
-    this.time = time
-    this.state = state
-    this.incoming = {}
-    this.outgoing = {}
-  }
-
-  addIncoming(edge) {
-    this.incoming[edge.u] = edge
-  }
-
-  addOutgoing(edge) {
-    this.outgoing[edge.u] = edge
-  }
-}
 
 // todo @ leo: example usage of the above classes. For simplicity in the example, the state represents past inputs
 let node0 = new Node(0, '0000')
