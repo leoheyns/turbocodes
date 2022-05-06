@@ -204,10 +204,10 @@ export default {
             let tdict_node = tdict[this.stringToBoolArr(node.state)]
             let forward_edges = []
             if(i >= this.output[0].length - this.memlenght){
-              if(tdict[this.stringToBoolArr(node.state)].one.nextmem.slice(-1)){
-                forward_edges = [tdict_node.zero]
-              } else {
+              if(!tdict_node.one.nextmem.slice(-1)[0]){
                 forward_edges = [tdict_node.one]
+              } else {
+                forward_edges = [tdict_node.zero]
               }
             } else {
               forward_edges = [tdict_node.one, tdict_node.zero]
