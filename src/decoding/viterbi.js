@@ -1,5 +1,5 @@
 export {
-    Edge, Node, viterbi, min_sum
+    Edge, Node, Trellis, viterbi, min_sum, sum_product,
 }
 
 class Edge {
@@ -49,8 +49,15 @@ class Node {
         }
         return JSON.stringify(o)
     }
-
 }
+
+class Trellis {
+    constructor(nodes, edges) {
+        this.nodes = nodes
+        this.edges = edges
+    }
+}
+
 
 function log_gamma(edge, llr_prior, y, f) {
     // f is the flip probability of the Binary Symmetric Channel
@@ -69,7 +76,6 @@ function log_gamma(edge, llr_prior, y, f) {
 }
 
 function min_sum(nodes, edges, edge_costs) {
-    // todo: test this function
     // calculate minimum sum
     // assumptions:
     //  nodes are sorted
@@ -114,9 +120,67 @@ function viterbi(nodes, edges, received_signal, llr_priors, f) {
     })
     let edge_costs = {}
     edges.forEach((edge) => {
-        let llr_prior = llr_priors[edge.time]
-        let log_g = log_gamma(edge, llr_prior, received_signal[edge.time], f)
+        let log_g = log_gamma(edge, llr_priors[edge.time], received_signal[edge.time], f)
         edge_costs[edge] = -log_g
     })
     return min_sum(nodes, edges, edge_costs)
 }
+
+
+function sum_product(nodes, edges, received_signal, llr_priors, f) {
+    // todo: test this function
+    // calculate the a posteriori LLR of input bit values (u) at specific edge times
+
+    // sort nodes by time and state
+    nodes.sort((a,b) => {
+        return a.time === b.time ? a.state > b.state : a.time > b.time // string or number compare
+    })
+
+    let alphas = {}
+    let betas = {}
+    let gammas = {}
+    edges.forEach((edge) => {
+        let log_g = log_gamma(edge, llr_priors[edge.time], received_signal[edge.time], f)
+        gammas[edge] = Math.exp(log_g)
+    })
+    nodes.forEach((node) => {
+        let alpha = 0
+        if (node === nodes[0]) { // starting node
+            alpha = 1
+        } else {
+            node.incoming.forEach((edge) => {
+                alpha += alphas[edge.from] * gammas[edge]
+            })
+        }
+        alphas[node] = alpha
+    })
+    nodes.reverse()
+    nodes.forEach((node) => {
+        let beta = 0
+        if (node === nodes[0]) { // final node
+            beta = 1
+        } else {
+            node.outgoing.forEach((edge) => {
+                beta += betas[edge.to] * gammas[edge]
+            })
+        }
+        betas[node] = beta
+    })
+    let llr_posteriors = {}
+    let edge_times = Object.keys(llr_priors)
+    edge_times.forEach((edge_time) => {
+        // see the course book chapter 25 for definition of r^(t)_n.
+        // here, r[0] denotes r^(0)_{edge_time} and r[1] denotes r^(1)_{edge_time}
+        let r = {0: 0, 1: 0}
+        let edges_in_time = edges.filter((edge) => edge.time === edge_time)
+        edges_in_time.forEach((edge) => {
+            r[edge.u] += alphas[edge.from] * gammas[edge] * betas[edge.to]
+        })
+        llr_posteriors[edge_time] = Math.log(r[0]/r[1])
+    })
+    return llr_posteriors
+}
+
+// function decode_iteratively(trellises) {
+//     // assumes
+// }
