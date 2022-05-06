@@ -259,7 +259,6 @@ function turboturbo(trellises, interleaver, received_signal, f) {
     })
     // todo: implement a function which interleaves a dictionary with edge times as keys, and a deinterleave function
     let llr_priors_interleaved = interleaver.interleave(llr_priors)
-    let received_signal_interleaved = interleaver.interleave(received_signal)
     let iteration = 0
     let max_iterations = 100
     let stop = false
