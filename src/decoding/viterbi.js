@@ -58,10 +58,30 @@ class Trellis {
         this.nodes = nodes
         this.edges = edges
         let edge_times_set = {} // objects work like hasmaps/hashsets, which is quite useful but also funny
-        edges.forEach((edge) => {
+        this.edges.forEach((edge) => {
             edge_times_set[edge.time] = null // we don't use the values, only the keys
         })
+        let times = {}
+        this.nodes.forEach((node) => {
+            times[node.time] = null // we don't use the values, only the keys
+        })
+        this.times = Object.keys(times)
         this.edge_times = Object.keys(edge_times_set)
+        // determine nodes per time
+        let nodes_per_time = {}
+        // calculate maximal width
+        let time_widths = {}
+        this.times.forEach((time) => {
+            nodes_per_time[time] = []
+            time_widths[time] = 0
+        })
+        this.nodes.forEach((node) => {
+            nodes_per_time[node.time].push(node)
+            time_widths[node.time] += 1
+        })
+        this.nodes_per_time = nodes_per_time
+        this.time_widths = time_widths
+        this.maximal_width = Math.max(...Object.values(time_widths))
     }
 
 }
