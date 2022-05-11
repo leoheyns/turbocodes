@@ -42,8 +42,14 @@ export default {
     }
   },
   mounted() {
-    this.test_min_sum()
+    // this.test_min_sum()
     // todo: more testing
+  },
+  computed: {
+    output() {
+      return viterbi
+    }
+
   }
 }
 </script>

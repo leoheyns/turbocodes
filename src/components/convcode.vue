@@ -30,35 +30,17 @@
       </div>
     </div>
     <div class="col-12">
-      <trellis :trellis="trellis"/>
+      <!-- <trellis :trellis="trellis"/> -->
     </div>
   </div>
 </template>
 
 <script>
-import trellis from '@/components/trellis'
+// import trellis from '@/components/trellis'
 
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 
 import {Edge, Node, Trellis} from "@/decoding/viterbi";
-
-
-// todo @ leo: example usage of the above classes. For simplicity in the example, the state represents past inputs
-let node0 = new Node(0, '0000')
-let node1 = new Node(1, '0001')
-let node2 = new Node(1, '0000')
-let node3 = new Node(2, '0000')
-
-let nodes = [node0, node1, node2, node3]
-
-
-let edge01 = new Edge('0', '00', node0, node1)
-let edge02 = new Edge('1', '11', node0, node2)
-let edge13 = new Edge('1', '11', node1, node3)
-let edge23 = new Edge('0', '11', node2, node3)
-
-let edges = [edge01, edge02, edge13, edge23]
-
 
 export default {
   name: 'convcode',
@@ -104,7 +86,6 @@ export default {
     encoded() {
       if (this.output) {
         let result = ""
-        console.log(this.output)
         Object.keys(this.output[0]).forEach((i) => {
           result += this.output[0][i]
           result += this.output[1][i]
@@ -122,12 +103,6 @@ export default {
     },
     input: function () {
       return this.sourcetext ? this.stringToBoolArr(this.sourcetext) : null
-    },
-    nodes: function () {
-      return nodes
-    },
-    edges: function () {
-      return edges
     },
     trellis: function () {
       return this.newGetTrellis()
@@ -239,14 +214,13 @@ export default {
         memset = newmemset
         trellis.push(tdict_layer)
       }
-      console.log(trellis)
     },
     newGetTrellis() {
       if (this.taps && this.output) {
         let times = []
         let tdict = this.getTrellisDict()
         times[0] = [new Node(0, Array(this.memlenght + 1).join("0"))]
-        edges = []
+        let edges = []
         for (let i = 0; i < this.output[0].length; i++) {
           let nextNodes = {}
           times[i].forEach(node => {
@@ -266,7 +240,7 @@ export default {
               if (!(edge.nextmem in nextNodes)) {
                 nextNodes[edge.nextmem] = new Node(i + 1, this.boolArrToStr(edge.nextmem))
               }
-              edges.push(new Edge(edge.u, edge.x, node, nextNodes[edge.nextmem]))
+              edges.push(new Edge(edge.u, edge.x.ta + '' + edge.x.tb, node, nextNodes[edge.nextmem]))
             });
           });
           times.push(Object.values(nextNodes))
@@ -279,11 +253,14 @@ export default {
   watch: {
     encoded(new_value) {
       this.$emit('encoded', new_value)
+    },
+    trellis(new_trellis) {
+      this.$emit('trellis', new_trellis)
     }
   },
-  components: {
-    trellis,
-  }
+  // components: {
+  //   trellis,
+  // }
 }
 </script>
 
