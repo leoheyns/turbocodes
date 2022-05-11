@@ -5,7 +5,7 @@
         <h4>Encoder</h4>
       </b-card-header>
       <b-card-body>
-        <convcode :source="source" @encoded="(encoded) => $emit('encoded', encoded)"/>
+        <convcode :source="source" @encoded="(encoded) => $emit('encoded', encoded)"  @trellis="(trellis) => $emit('trellis', trellis)"/>
       </b-card-body>
     </b-card>
   </div>

@@ -11,10 +11,9 @@
         </div>
 
         <div class="row">
-          <TurboEncoder :source="source" @encoded="set_encoded"/>
+          <TurboEncoder :source="source" @encoded="set_encoded" @trellis="set_trellis"/>
           <BinarySymmetricChannel :f.sync="flip_probability" :input="encoded" @received="set_received"/>
-          <TurboDecoder :input="received" :f="flip_probability" @decoded="set_decoded"/>
-
+          <TurboDecoder :input="received" :source="source" :trellis="trellis" :f="flip_probability" @decoded="set_decoded"/>
         </div>
       </div>
     </div>
@@ -33,6 +32,7 @@ export default {
       encoded: "",
       received: "",
       decoded: "",
+      trellis: null,
       flip_probability: 0.05,
     }
   },
@@ -45,7 +45,10 @@ export default {
     },
     set_decoded(decoded) {
       this.decoded = decoded
-    }
+    },
+    set_trellis(trellis) {
+      this.trellis = trellis
+    },
   },
   components: {
     TurboEncoder,
