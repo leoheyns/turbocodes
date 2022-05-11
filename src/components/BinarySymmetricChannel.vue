@@ -7,8 +7,8 @@
       <b-card-body>
         <div class="m-2">
           <p class="m-0"><label for="range-f">bit flip probability {{ f }}</label></p>
-          <b-form-input id="range-f" class="mw-100" :value="f" @input="(v) => {$emit('update:f', Number(v))}" type="range" min="0"
-                        max="1"
+          <b-form-input id="range-f" class="mw-100" :value="f" @input="(v) => {$emit('update:f', Number(v))}" type="range" min="0.0001"
+                        max="0.999"
                         step="0.0001"/>
         </div>
         <p>Transmitted: {{input}}</p>
