@@ -269,6 +269,7 @@ function turboturbo(trellises, interleaver, received_signal, f) {
     //  received_signal is a string of received bits
     let first = trellises[0]
     let second = trellises[1]
+
     let llr_priors = {}
     let systematic = {}
     let parity_first = {}
@@ -277,18 +278,18 @@ function turboturbo(trellises, interleaver, received_signal, f) {
     for (let i = 0; i < edge_times.length; i++) {
         let edge_time = edge_times[i]
         systematic[edge_time] = received_signal[i * 3]
-        parity_first = received_signal[i * 3 + 1]
-        parity_second = received_signal[i * 3 + 2]
+        parity_first[edge_time] = received_signal[i * 3 + 1]
+        parity_second[edge_time] = received_signal[i * 3 + 2]
     }
     let systematic_interleaved = interleaver.interleave(systematic)
     edge_times.forEach((edge_time) => {
         let unbiased_likelihood_ratio = 1 // neither option is more likely
         llr_priors[edge_time] = Math.log(unbiased_likelihood_ratio)
     })
-    // todo: implement a function which interleaves a dictionary with edge times as keys, and a deinterleave function
     let llr_priors_interleaved = interleaver.interleave(llr_priors)
+    console.log(llr_priors_interleaved, llr_priors)
     let iteration = 0
-    let max_iterations = 100
+    let max_iterations = 2
     let stop = false
     let llr_priors_first = llr_priors
     let llr_priors_second = llr_priors_interleaved
@@ -301,11 +302,12 @@ function turboturbo(trellises, interleaver, received_signal, f) {
         received_signal_second[edge_time] = [systematic_interleaved[edge_time], parity_second[edge_time]]
     })
     while (!stop) {
-        llr_posteriors[first] = sum_product(first, received_signal_first, llr_priors_first, f)
-        llr_posteriors[second] = sum_product(second, received_signal_second, llr_priors_second, f)
+        llr_posteriors[0] = sum_product(first, received_signal_first, llr_priors_first, f)
 
-        llr_priors_second = interleaver.interleave(get_extrinsic_information(llr_posteriors[first], llr_priors_first, received_signal_first, f))
-        llr_priors_first = interleaver.deinterleave(get_extrinsic_information(llr_posteriors[second], llr_priors_second, received_signal_second, f))
+        llr_posteriors[1] = sum_product(second, received_signal_second, llr_priors_second, f)
+
+        llr_priors_second = interleaver.interleave(get_extrinsic_information(llr_posteriors[0], llr_priors_first, received_signal_first, f))
+        llr_priors_first = interleaver.deinterleave(get_extrinsic_information(llr_posteriors[1], llr_priors_second, received_signal_second, f))
 
         iteration += 1
         stop = iteration >= max_iterations

@@ -52,8 +52,8 @@ export default {
       type: "sysnonrec",
       types: [
         "sysnonrec",
-        "nonsysnonrec",
-        "sysrec"
+        // "nonsysnonrec",
+        // "sysrec"
       ],
       taptext0: "",
       taptext1: "",
