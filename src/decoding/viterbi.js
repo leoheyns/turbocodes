@@ -10,6 +10,8 @@ class Edge {
         this.to = to
         this.from.addOutgoing(this)
         this.to.addIncoming(this)
+        this.color = 'black'
+        this.log_g = 0
     }
 
     get time() {
@@ -126,9 +128,13 @@ function log_gamma(edge, llr_prior, y, f) {
         if (y[l] === edge.x[l]) {
             log_p_ygivenx += Math.log(1 - f)
         }
-        log_p_ygivenx += Math.log(f)
+        else{
+            log_p_ygivenx += Math.log(f)
+        }
     })
-    return log_p_u + log_p_ygivenx
+    let log_g = log_p_u + log_p_ygivenx
+    edge.log_g = log_g
+    return log_g
 }
 
 function min_sum(nodes, edges, edge_costs) {
@@ -177,12 +183,14 @@ function viterbi(trellis, received_signal, llr_priors, f) {
     nodes.sort((a, b) => {
         return a.time === b.time ? a.state > b.state : a.time > b.time // string or number compare
     })
+
     let edge_costs = {}
     edges.forEach((edge) => {
         let log_g = log_gamma(edge, llr_priors[edge.time], received_signal[edge.time], f)
         edge_costs[edge] = -log_g
     })
-    return min_sum(nodes, edges, edge_costs)
+    let result = min_sum(nodes, edges, edge_costs)
+    return result
 }
 
 
