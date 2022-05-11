@@ -2,7 +2,7 @@
   <div id="app">
     <div class="container">
       <div class="col p-5">
-        <h1>convolutional Codes</h1>
+        <h1>Convolutional Codes</h1>
         <div class="row mt-5">
           <div class="col-2"><label for="source">source:</label></div>
           <div class="col">
