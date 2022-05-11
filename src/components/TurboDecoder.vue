@@ -1,5 +1,5 @@
 <template>
-  <div class="col-6 mt-3">
+  <div class="col-12 mt-3">
     <b-card>
       <b-card-header>
         <h4>Decoder</h4>
